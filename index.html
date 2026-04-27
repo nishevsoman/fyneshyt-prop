@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Just one chance 🌸</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --rose: #c8506a;
+    --rose-light: #f7e8ec;
+    --rose-pale: #fdf3f5;
+    --cream: #faf7f4;
+    --text: #2a1a1f;
+    --muted: #8a6a72;
+    --gold: #c9a96e;
+  }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* ── PETALS CANVAS ── */
+  #petals-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── PAGE SYSTEM ── */
+  .page {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    z-index: 1;
+  }
+
+  .page.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(40px);
+  }
+
+  /* ── PAGE 1 ── */
+  #page1 {
+    text-align: center;
+    gap: 0;
+  }
+
+  .eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.2rem;
+  }
+
+  .main-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.4rem, 10vw, 3.8rem);
+    font-weight: 300;
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .main-title em {
+    font-style: italic;
+    color: var(--rose);
+  }
+
+  .subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(1rem, 4vw, 1.25rem);
+    color: var(--muted);
+    font-weight: 300;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+    max-width: 300px;
+  }
+
+  /* ── DIVIDER ── */
+  .ornament {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 2.5rem;
+    color: var(--gold);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+  }
+  .ornament::before, .ornament::after {
+    content: '';
+    display: block;
+    width: 48px;
+    height: 0.5px;
+    background: var(--gold);
+  }
+
+  /* ── BUTTONS WRAPPER ── */
+  #btn-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  /* ── YES BUTTON ── */
+  #btn-yes {
+    background: var(--rose);
+    color: #fff;
+    border: none;
+    border-radius: 100px;
+    padding: 0.85em 2.2em;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), font-size 0.4s ease, padding 0.4s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 20px rgba(200, 80, 106, 0.25);
+    min-width: 160px;
+    touch-action: manipulation;
+    -webkit-appearance: none;
+  }
+
+  #btn-yes:active {
+    transform: scale(0.96);
+  }
+
+  /* ── NO BUTTON ── */
+  #btn-no {
+    background: transparent;
+    color: var(--muted);
+    border: 0.5px solid #ccc;
+    border-radius: 100px;
+    padding: 0.7em 1.8em;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 300;
+    cursor: pointer;
+    transition: transform 0.3s ease, font-size 0.35s ease, padding 0.35s ease, opacity 0.35s ease;
+    touch-action: manipulation;
+    -webkit-appearance: none;
+  }
+
+  #btn-no:active {
+    transform: scale(0.96);
+  }
+
+  /* ── PAGE 2 ── */
+  #page2 {
+    text-align: center;
+    gap: 0;
+  }
+
+  #page2 .promise-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 300;
+    margin-bottom: 1.5rem;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  #page2 .big-heart {
+    font-size: 3rem;
+    line-height: 1;
+    margin-bottom: 1.4rem;
+    animation: heartbeat 1.6s ease-in-out infinite;
+  }
+
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    14% { transform: scale(1.18); }
+    28% { transform: scale(1); }
+    42% { transform: scale(1.1); }
+    56% { transform: scale(1); }
+  }
+
+  #page2 .promise-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 9vw, 3.2rem);
+    font-weight: 300;
+    line-height: 1.2;
+    margin-bottom: 1.4rem;
+    color: var(--text);
+  }
+
+  #page2 .promise-title em {
+    font-style: italic;
+    color: var(--rose);
+  }
+
+  .promise-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    max-width: 320px;
+    margin: 0 auto 2.2rem;
+  }
+
+  .promise-line {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(1rem, 3.8vw, 1.15rem);
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.55;
+    padding-bottom: 0.85rem;
+    border-bottom: 0.5px solid #e8d8db;
+  }
+
+  .promise-line:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .promise-line strong {
+    color: var(--rose);
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .signature {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-top: 0.5rem;
+  }
+
+  /* ── FLOATING PETALS ── */
+  @keyframes floatUp {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 0.8; }
+    100% { transform: translateY(-110vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* scroll for page 2 on short screens */
+  #page2 { overflow-y: auto; padding-top: 3rem; padding-bottom: 3rem; }
+</style>
+</head>
+<body>
+
+<canvas id="petals-canvas"></canvas>
+
+<!-- PAGE 1 -->
+<section class="page" id="page1">
+  <p class="eyebrow">a humble request</p>
+  <h1 class="main-title">Would you like to<br><em>go on a date with me?</em></h1>
+  <p class="subtitle">Not to be your everything — just to show you I could be.</p>
+  <div class="ornament">✦</div>
+  <div id="btn-area">
+    <button id="btn-yes" onclick="onYes()">Yes, okay ✨</button>
+    <button id="btn-no" onclick="onNo()">No</button>
+  </div>
+</section>
+
+<!-- PAGE 2 -->
+<section class="page hidden" id="page2">
+  <p class="promise-eyebrow">I promise you this</p>
+  <div class="big-heart">🌸</div>
+  <h2 class="promise-title">I'll be the man<br>you <em>needed</em></h2>
+  <div class="promise-lines">
+    <p class="promise-line">I know you overthink. I know you question things, even the good ones. I won’t run from that — I’ll stand there with you, every single time.</p>
+    
+    <p class="promise-line">You see the world differently — like a designer, like someone who notices what others miss. I see that in you, and I admire it more than you realize.</p>
+    
+    <p class="promise-line">I accept you as you are — not some perfect version, but you on your best days, your worst days, and the ones in between. I’m not here for “easy,” I’m here for real.</p>
+    
+    <p class="promise-line">You’re strong, complicated, a little intense… and yeah, sometimes hard to handle. But I’m not going anywhere just because it’s difficult.</p>
+    
+    <p class="promise-line">From Bhopal and Delhi to wherever life takes us, I’ll choose you — not just when things feel right, but when they don’t.</p>
+    
+    <p class="promise-line">You gave me a chance, and I’m not taking that lightly. I’ll prove, every day, that I can be the one you don’t have to doubt.</p>
+  </div>
+  <div class="ornament">✦</div>
+  <p class="signature">— yours, always</p>
+</section>
+
+<script>
+  // ── PETAL CANVAS ──
+  const canvas = document.getElementById('petals-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  const petals = [];
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  class Petal {
+    constructor(burst) {
+      this.reset(burst);
+    }
+    reset(burst) {
+      this.x = burst ? W / 2 + (Math.random() - 0.5) * 120 : Math.random() * W;
+      this.y = burst ? H / 2 + (Math.random() - 0.5) * 80 : H + 20;
+      this.size = 5 + Math.random() * 7;
+      this.speedY = burst ? -(2 + Math.random() * 4) : -(0.5 + Math.random() * 1.2);
+      this.speedX = (Math.random() - 0.5) * (burst ? 3 : 0.8);
+      this.rotation = Math.random() * Math.PI * 2;
+      this.rotSpeed = (Math.random() - 0.5) * 0.08;
+      this.opacity = burst ? 0.9 : 0.4 + Math.random() * 0.5;
+      this.life = 1;
+      this.decay = burst ? 0.008 + Math.random() * 0.01 : 0.003 + Math.random() * 0.004;
+      this.hue = 330 + Math.random() * 30;
+      this.sat = 60 + Math.random() * 30;
+    }
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+      this.rotation += this.rotSpeed;
+      this.life -= this.decay;
+      this.speedX += (Math.random() - 0.5) * 0.05;
+    }
+    draw() {
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rotation);
+      ctx.globalAlpha = this.life * this.opacity;
+      ctx.fillStyle = `hsl(${this.hue}, ${this.sat}%, 75%)`;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, this.size, this.size * 0.55, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  // gentle ambient petals
+  for (let i = 0; i < 12; i++) petals.push(new Petal(false));
+
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    for (let i = petals.length - 1; i >= 0; i--) {
+      petals[i].update();
+      petals[i].draw();
+      if (petals[i].life <= 0) {
+        petals[i].reset(false);
+        petals[i].y = H + 20;
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // ── BUTTON LOGIC ──
+  let noCount = 0;
+  const btnYes = document.getElementById('btn-yes');
+  const btnNo  = document.getElementById('btn-no');
+
+  const noTexts = [
+    'No', 'Really no?', 'Are you sure?', 'Think again…',
+    'Come on…', 'Please?', 'Just one chance!', 'I promise I\'m worth it',
+    'Last chance to say no…', 'Ok fine, but really?', '…no?'
+  ];
+
+  function onNo() {
+    noCount++;
+    const scale = 1 + noCount * 0.18;
+    const noScale = Math.max(0.35, 1 - noCount * 0.1);
+
+    btnYes.style.fontSize = Math.min(1.1 + noCount * 0.15, 2.4) + 'rem';
+    btnYes.style.padding = `${0.85 + noCount * 0.08}em ${2.2 + noCount * 0.18}em`;
+    btnYes.style.boxShadow = `0 ${4 + noCount * 2}px ${20 + noCount * 5}px rgba(200,80,106,${Math.min(0.25 + noCount * 0.04, 0.55)})`;
+
+    btnNo.style.fontSize = Math.max(0.9 - noCount * 0.07, 0.3) + 'rem';
+    btnNo.style.padding = `${Math.max(0.7 - noCount * 0.06, 0.15)}em ${Math.max(1.8 - noCount * 0.12, 0.4)}em`;
+    btnNo.style.opacity = Math.max(1 - noCount * 0.09, 0.2);
+
+    btnNo.textContent = noTexts[Math.min(noCount, noTexts.length - 1)];
+
+    if (noCount >= 10) {
+      btnNo.style.visibility = 'hidden';
+    }
+
+    // spawn burst petals
+    for (let i = 0; i < 10; i++) petals.push(new Petal(true));
+  }
+
+  function onYes() {
+    // big petal burst
+    for (let i = 0; i < 40; i++) {
+      setTimeout(() => petals.push(new Petal(true)), i * 18);
+    }
+    document.getElementById('page1').classList.add('hidden');
+    setTimeout(() => {
+      document.getElementById('page2').classList.remove('hidden');
+    }, 400);
+  }
+</script>
+</body>
+</html>
