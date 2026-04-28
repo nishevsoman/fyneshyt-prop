@@ -2,417 +2,733 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>@moksha.nk 🌸</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Moksha</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Libre+Baskerville:ital@0;1&family=Playfair+Display:ital,wght@0,400;1,400;1,700&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --rose: #c8506a;
-    --rose-light: #f7e8ec;
-    --rose-pale: #fdf3f5;
-    --cream: #faf7f4;
-    --text: #2a1a1f;
-    --muted: #8a6a72;
-    --gold: #c9a96e;
+    --rose: #C8637C;
+    --rose-light: #F2C4CE;
+    --rose-pale: #FDF0F3;
+    --wine: #7A2840;
+    --blush: #F7E0E6;
+    --gold: #C9A96E;
+    --gold-light: #E8D5B0;
+    --cream: #FBF7F2;
+    --ink: #2C1810;
+    --ink-light: #5C3D35;
+    --sage: #8FAF8A;
   }
 
-  html, body {
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
+  html { scroll-behavior: smooth; }
+
+  body {
     background: var(--cream);
-    font-family: 'DM Sans', sans-serif;
-    color: var(--text);
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    color: var(--ink);
+    overflow-x: hidden;
+    cursor: default;
   }
 
-  /* ── PETALS CANVAS ── */
+  /* ── LOADING SCREEN ── */
+  #loader {
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--cream);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 2rem;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+  }
+  #loader.gone { opacity: 0; visibility: hidden; }
+
+  .loader-petals {
+    position: relative; width: 120px; height: 120px;
+  }
+  .petal {
+    position: absolute; left: 50%; top: 50%;
+    width: 22px; height: 44px;
+    background: linear-gradient(to bottom, var(--rose-light), var(--rose));
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    transform-origin: 50% 100%;
+    opacity: 0;
+    animation: petalBloom 2.4s ease-out infinite;
+  }
+  .petal:nth-child(1) { transform: translateX(-50%) translateY(-100%) rotate(0deg); animation-delay: 0s; }
+  .petal:nth-child(2) { transform: translateX(-50%) translateY(-100%) rotate(45deg); animation-delay: 0.15s; }
+  .petal:nth-child(3) { transform: translateX(-50%) translateY(-100%) rotate(90deg); animation-delay: 0.3s; }
+  .petal:nth-child(4) { transform: translateX(-50%) translateY(-100%) rotate(135deg); animation-delay: 0.45s; }
+  .petal:nth-child(5) { transform: translateX(-50%) translateY(-100%) rotate(180deg); animation-delay: 0.6s; }
+  .petal:nth-child(6) { transform: translateX(-50%) translateY(-100%) rotate(225deg); animation-delay: 0.75s; }
+  .petal:nth-child(7) { transform: translateX(-50%) translateY(-100%) rotate(270deg); animation-delay: 0.9s; }
+  .petal:nth-child(8) { transform: translateX(-50%) translateY(-100%) rotate(315deg); animation-delay: 1.05s; }
+
+  @keyframes petalBloom {
+    0% { opacity: 0; transform: translateX(-50%) translateY(-100%) rotate(var(--r, 0deg)) scaleY(0.3); }
+    40% { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-100%) rotate(var(--r, 0deg)) scaleY(1); }
+  }
+  .petal:nth-child(1) { --r: 0deg; }
+  .petal:nth-child(2) { --r: 45deg; }
+  .petal:nth-child(3) { --r: 90deg; }
+  .petal:nth-child(4) { --r: 135deg; }
+  .petal:nth-child(5) { --r: 180deg; }
+  .petal:nth-child(6) { --r: 225deg; }
+  .petal:nth-child(7) { --r: 270deg; }
+  .petal:nth-child(8) { --r: 315deg; }
+
+  .loader-center {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 18px; height: 18px;
+    background: var(--rose);
+    border-radius: 50%;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{transform:translate(-50%,-50%) scale(1);} 50%{transform:translate(-50%,-50%) scale(1.3);} }
+
+  .loader-text {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: var(--rose);
+    font-size: 1.15rem;
+    letter-spacing: 0.12em;
+    opacity: 0;
+    animation: fadeWord 2.4s ease infinite;
+  }
+  @keyframes fadeWord { 0%,100%{opacity:0;} 40%,70%{opacity:1;} }
+
+  /* ── FALLING PETALS BG ── */
   #petals-canvas {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative; z-index: 1;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .hero-ornament {
+    display: flex; align-items: center; gap: 1rem;
+    margin-bottom: 2.5rem;
+    opacity: 0; animation: riseIn 1.2s ease 0.3s forwards;
+  }
+  .ornament-line {
+    width: 80px; height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold));
+  }
+  .ornament-line.right {
+    background: linear-gradient(to left, transparent, var(--gold));
+  }
+  .ornament-diamond {
+    width: 8px; height: 8px;
+    background: var(--gold);
+    transform: rotate(45deg);
+  }
+
+  .hero-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    opacity: 0; animation: riseIn 1.2s ease 0.5s forwards;
+  }
+
+  .hero-name {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(4rem, 12vw, 9rem);
+    font-weight: 400;
+    color: var(--wine);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    margin-bottom: 2rem;
+    opacity: 0; animation: riseIn 1.4s ease 0.7s forwards;
+  }
+
+  .hero-tagline {
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    font-style: italic;
+    color: var(--ink-light);
+    letter-spacing: 0.05em;
+    max-width: 480px;
+    line-height: 1.8;
+    opacity: 0; animation: riseIn 1.2s ease 1s forwards;
+  }
+
+  .scroll-cue {
+    margin-top: 4rem;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 0.5rem;
+    opacity: 0; animation: riseIn 1s ease 1.5s forwards;
+  }
+  .scroll-cue span {
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    color: var(--rose);
+    text-transform: uppercase;
+  }
+  .scroll-arrow {
+    width: 24px; height: 24px;
+    border-right: 1.5px solid var(--rose);
+    border-bottom: 1.5px solid var(--rose);
+    transform: rotate(45deg);
+    animation: bounce 1.6s ease infinite;
+  }
+  @keyframes bounce { 0%,100%{transform:rotate(45deg) translateY(0);} 50%{transform:rotate(45deg) translateY(6px);} }
+
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(28px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── LETTER SECTION ── */
+  .letter-wrapper {
+    position: relative; z-index: 1;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 2rem 8rem;
+  }
+
+  .letter-paper {
+    background: #fff;
+    border-radius: 2px;
+    padding: clamp(3rem, 8vw, 6rem) clamp(2.5rem, 8vw, 6rem);
+    position: relative;
+    box-shadow:
+      0 2px 4px rgba(120,40,64,0.04),
+      0 8px 32px rgba(120,40,64,0.06),
+      0 40px 80px rgba(120,40,64,0.05);
+  }
+
+  /* Paper texture lines */
+  .letter-paper::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 31px,
+      rgba(200, 180, 180, 0.1) 31px,
+      rgba(200, 180, 180, 0.1) 32px
+    );
+    pointer-events: none;
+    border-radius: 2px;
+  }
+
+  /* Red margin line */
+  .letter-paper::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    left: clamp(2.5rem, 8vw, 6rem);
+    transform: translateX(-2rem);
+    width: 1px;
+    background: rgba(200, 100, 100, 0.15);
+    pointer-events: none;
+  }
+
+  .letter-decoration-top {
+    display: flex; justify-content: center;
+    margin-bottom: 3rem;
+  }
+
+  .letter-salutation {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    color: var(--wine);
+    margin-bottom: 2.5rem;
+    opacity: 0;
+  }
+
+  .letter-body p {
+    font-size: clamp(1rem, 1.8vw, 1.18rem);
+    line-height: 2;
+    color: var(--ink);
+    margin-bottom: 1.8rem;
+    font-weight: 300;
+    opacity: 0;
+  }
+
+  .letter-body p.highlight {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(1.2rem, 2.5vw, 1.55rem);
+    color: var(--wine);
+    text-align: center;
+    padding: 2rem 0;
+    line-height: 1.7;
+  }
+
+  .letter-sign {
+    margin-top: 3rem;
+    text-align: right;
+    opacity: 0;
+  }
+  .letter-sign .from {
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+  .letter-sign .name {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 2.2rem;
+    color: var(--wine);
+  }
+
+  .is-visible { animation: fadeUp 0.9s ease forwards; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── FLORAL SVG DECORATIONS ── */
+  .floral-top, .floral-bottom {
+    width: 100%; display: flex; justify-content: center;
+    margin: 0.5rem 0;
+  }
+
+  /* ── CLOSING SECTION ── */
+  .closing {
+    position: relative; z-index: 1;
+    text-align: center;
+    padding: 5rem 2rem 8rem;
+  }
+
+  .closing-quote {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(1.3rem, 3vw, 2rem);
+    color: var(--wine);
+    max-width: 600px;
+    margin: 0 auto 4rem;
+    line-height: 1.7;
+    opacity: 0;
+    animation: riseIn 1s ease forwards;
+  }
+  .closing-quote.in-view { animation: riseIn 1s ease forwards; }
+
+  /* Floating hearts */
+  .hearts-container {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  }
+
+  /* ── CUSTOM CURSOR ── */
+  .cursor {
+    position: fixed; z-index: 99999;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+  }
+  .cursor-outer {
+    width: 32px; height: 32px;
+    border: 1.5px solid rgba(200,99,124,0.5);
+    border-radius: 50%;
+    transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
+    margin: -16px 0 0 -16px;
+  }
+  .cursor-inner {
+    width: 6px; height: 6px;
+    background: var(--rose);
+    border-radius: 50%;
+    margin: -3px 0 0 -3px;
+    position: absolute; top: 50%; left: 50%;
+  }
+
+  /* ── DIVIDER ── */
+  .section-divider {
+    display: flex; align-items: center; justify-content: center;
+    gap: 1.5rem; margin: 3rem 0;
+    opacity: 0.5;
+  }
+  .div-line { width: 60px; height: 1px; background: var(--gold); }
+  .div-rose { font-size: 1.2rem; color: var(--rose); }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar {
+    position: fixed; top: 0; left: 0; z-index: 9998;
+    height: 2px;
+    background: linear-gradient(to right, var(--rose-light), var(--rose), var(--wine));
+    width: 0; transition: width 0.1s linear;
+  }
+
+  /* ── WATERMARK ── */
+  .watermark {
     position: fixed;
-    inset: 0;
+    right: -60px; top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: rgba(200, 99, 124, 0.15);
+    text-transform: uppercase;
     pointer-events: none;
     z-index: 0;
   }
 
-  /* ── PAGE SYSTEM ── */
-  .page {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem 1.5rem;
-    transition: opacity 0.8s ease, transform 0.8s ease;
-    z-index: 1;
+  @media (max-width: 600px) {
+    .letter-paper::after { display: none; }
+    .cursor { display: none; }
   }
-
-  .page.hidden {
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(40px);
-  }
-
-  /* ── PAGE 1 ── */
-  #page1 {
-    text-align: center;
-    gap: 0;
-  }
-
-  .eyebrow {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 11px;
-    font-weight: 300;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 1.2rem;
-  }
-
-  .main-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(2.4rem, 10vw, 3.8rem);
-    font-weight: 300;
-    line-height: 1.15;
-    color: var(--text);
-    margin-bottom: 0.5rem;
-  }
-
-  .main-title em {
-    font-style: italic;
-    color: var(--rose);
-  }
-
-  .subtitle {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: clamp(1rem, 4vw, 1.25rem);
-    color: var(--muted);
-    font-weight: 300;
-    margin-bottom: 2.5rem;
-    line-height: 1.6;
-    max-width: 300px;
-  }
-
-  /* ── DIVIDER ── */
-  .ornament {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 2.5rem;
-    color: var(--gold);
-    font-size: 13px;
-    letter-spacing: 0.1em;
-  }
-  .ornament::before, .ornament::after {
-    content: '';
-    display: block;
-    width: 48px;
-    height: 0.5px;
-    background: var(--gold);
-  }
-
-  /* ── BUTTONS WRAPPER ── */
-  #btn-area {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    width: 100%;
-  }
-
-  /* ── YES BUTTON ── */
-  #btn-yes {
-    background: var(--rose);
-    color: #fff;
-    border: none;
-    border-radius: 100px;
-    padding: 0.85em 2.2em;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 400;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-    transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), font-size 0.4s ease, padding 0.4s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 20px rgba(200, 80, 106, 0.25);
-    min-width: 160px;
-    touch-action: manipulation;
-    -webkit-appearance: none;
-  }
-
-  #btn-yes:active {
-    transform: scale(0.96);
-  }
-
-  /* ── NO BUTTON ── */
-  #btn-no {
-    background: transparent;
-    color: var(--muted);
-    border: 0.5px solid #ccc;
-    border-radius: 100px;
-    padding: 0.7em 1.8em;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 300;
-    cursor: pointer;
-    transition: transform 0.3s ease, font-size 0.35s ease, padding 0.35s ease, opacity 0.35s ease;
-    touch-action: manipulation;
-    -webkit-appearance: none;
-  }
-
-  #btn-no:active {
-    transform: scale(0.96);
-  }
-
-  /* ── PAGE 2 ── */
-  #page2 {
-    text-align: center;
-    gap: 0;
-  }
-
-  #page2 .promise-eyebrow {
-    font-size: 11px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--gold);
-    font-weight: 300;
-    margin-bottom: 1.5rem;
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  #page2 .big-heart {
-    font-size: 3rem;
-    line-height: 1;
-    margin-bottom: 1.4rem;
-    animation: heartbeat 1.6s ease-in-out infinite;
-  }
-
-  @keyframes heartbeat {
-    0%, 100% { transform: scale(1); }
-    14% { transform: scale(1.18); }
-    28% { transform: scale(1); }
-    42% { transform: scale(1.1); }
-    56% { transform: scale(1); }
-  }
-
-  #page2 .promise-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(2rem, 9vw, 3.2rem);
-    font-weight: 300;
-    line-height: 1.2;
-    margin-bottom: 1.4rem;
-    color: var(--text);
-  }
-
-  #page2 .promise-title em {
-    font-style: italic;
-    color: var(--rose);
-  }
-
-  .promise-lines {
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-    max-width: 320px;
-    margin: 0 auto 2.2rem;
-  }
-
-  .promise-line {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: clamp(1rem, 3.8vw, 1.15rem);
-    color: var(--muted);
-    font-weight: 300;
-    line-height: 1.55;
-    padding-bottom: 0.85rem;
-    border-bottom: 0.5px solid #e8d8db;
-  }
-
-  .promise-line:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-  }
-
-  .promise-line strong {
-    color: var(--rose);
-    font-weight: 400;
-    font-style: normal;
-  }
-
-  .signature {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 1.1rem;
-    color: var(--gold);
-    margin-top: 0.5rem;
-  }
-
-  /* ── FLOATING PETALS ── */
-  @keyframes floatUp {
-    0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
-    10%  { opacity: 1; }
-    90%  { opacity: 0.8; }
-    100% { transform: translateY(-110vh) rotate(720deg); opacity: 0; }
-  }
-
-  /* scroll for page 2 on short screens */
-  #page2 { overflow-y: auto; padding-top: 3rem; padding-bottom: 3rem; }
 </style>
 </head>
 <body>
 
+<!-- CURSOR -->
+<div class="cursor" id="cursor">
+  <div class="cursor-outer"></div>
+  <div class="cursor-inner"></div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-bar" id="progress"></div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-petals">
+    <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+    <div class="petal"></div><div class="petal"></div><div class="petal"></div>
+    <div class="petal"></div><div class="petal"></div>
+    <div class="loader-center"></div>
+  </div>
+  <div class="loader-text" id="loader-text">Opening a letter…</div>
+</div>
+
+<!-- FALLING PETALS -->
 <canvas id="petals-canvas"></canvas>
+<div class="watermark">with love · with honesty · with hope</div>
 
-<!-- PAGE 1 -->
-<section class="page" id="page1">
-  <p class="eyebrow">a humble request</p>
-  <h1 class="main-title">Would it be okay if I<br><em>check in on you sometime?</em></h1>
-  <p class="subtitle">Not to be your everything — just to show you I could be.</p>
-  <div class="ornament">✦</div>
-  <div id="btn-area">
-    <button id="btn-yes" onclick="onYes()">I’d like that ✨</button>
-    <button id="btn-no" onclick="onNo()">No</button>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-ornament">
+    <div class="ornament-line"></div>
+    <div class="ornament-diamond"></div>
+    <div class="ornament-line right"></div>
+  </div>
+  <div class="hero-subtitle">A letter, for you</div>
+  <div class="hero-name">Moksha</div>
+  <div class="hero-tagline">Some words I meant to say, written down because they deserved more than a moment.</div>
+  <div class="scroll-cue">
+    <span>Read on</span>
+    <div class="scroll-arrow"></div>
   </div>
 </section>
 
-<!-- PAGE 2 -->
-<section class="page hidden" id="page2">
-  <p class="promise-eyebrow">just so you know</p>
-  <div class="big-heart">🌸</div>
-  <h2 class="promise-title">no pressure,<br><em>just honesty</em></h2>
-  <div class="promise-lines">
-    <p class="promise-line">I know you overthink. I know you question things, even the good ones. I won’t run from that and I’m not here to add to it.</p>
-    
-    <p class="promise-line">You see the world differently — like a designer, like someone who notices what others miss. I see that in you, and I admire it more than you realize.</p>
-    
-    <p class="promise-line">I accept you as you are — not some perfect version, but you on your best days, your worst days, and the ones in between. I’m not here for “easy,” I’m here for real.</p>
-    
-    <p class="promise-line">You’re strong, complicated, a little intense… and yeah, sometimes hard to handle. But I’m not going anywhere just because it’s difficult.</p>
-    
-    <p class="promise-line">From Bhopal and Delhi to wherever life takes us, not just when things feel right, but when they don’t.</p>
-    
-    <p class="promise-line">I’ll prove, every day, that I can be the one you don’t have to doubt.</p>
+<!-- LETTER -->
+<section class="letter-wrapper">
+  <div class="letter-paper">
+    <!-- Top decoration -->
+    <div class="floral-top">
+      <svg width="260" height="60" viewBox="0 0 260 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g opacity="0.7">
+          <!-- left branch -->
+          <path d="M10 30 Q30 20 55 28 Q70 32 80 28" stroke="#C9A96E" stroke-width="1" fill="none"/>
+          <path d="M55 28 Q52 18 58 12" stroke="#8FAF8A" stroke-width="0.8" fill="none"/>
+          <ellipse cx="60" cy="9" rx="5" ry="8" fill="#A8CCA3" opacity="0.6" transform="rotate(-20 60 9)"/>
+          <path d="M70 30 Q68 20 74 14" stroke="#8FAF8A" stroke-width="0.8" fill="none"/>
+          <ellipse cx="76" cy="11" rx="4" ry="7" fill="#A8CCA3" opacity="0.5" transform="rotate(15 76 11)"/>
+          <!-- small rose left -->
+          <circle cx="30" cy="28" r="6" fill="#F2C4CE" opacity="0.8"/>
+          <circle cx="30" cy="28" r="3" fill="#C8637C" opacity="0.6"/>
+          <ellipse cx="26" cy="26" rx="4" ry="5" fill="#F2C4CE" opacity="0.5" transform="rotate(-30 26 26)"/>
+          <ellipse cx="34" cy="24" rx="4" ry="5" fill="#F2C4CE" opacity="0.5" transform="rotate(30 34 24)"/>
+          <ellipse cx="28" cy="22" rx="3" ry="4" fill="#F2C4CE" opacity="0.4" transform="rotate(10 28 22)"/>
+        </g>
+
+        <!-- center ornament -->
+        <g transform="translate(130,30)">
+          <path d="M-40 0 L-8 0" stroke="#C9A96E" stroke-width="0.8"/>
+          <path d="M8 0 L40 0" stroke="#C9A96E" stroke-width="0.8"/>
+          <path d="M0 -12 C-4 -6 -4 6 0 12 C4 6 4 -6 0 -12Z" fill="#C9A96E" opacity="0.7"/>
+          <circle cx="0" cy="0" r="3" fill="#C9A96E"/>
+          <circle cx="-20" cy="0" r="1.5" fill="#C9A96E" opacity="0.5"/>
+          <circle cx="20" cy="0" r="1.5" fill="#C9A96E" opacity="0.5"/>
+        </g>
+
+        <!-- right branch (mirror) -->
+        <g transform="translate(260,0) scale(-1,1)">
+          <path d="M10 30 Q30 20 55 28 Q70 32 80 28" stroke="#C9A96E" stroke-width="1" fill="none"/>
+          <path d="M55 28 Q52 18 58 12" stroke="#8FAF8A" stroke-width="0.8" fill="none"/>
+          <ellipse cx="60" cy="9" rx="5" ry="8" fill="#A8CCA3" opacity="0.6" transform="rotate(-20 60 9)"/>
+          <path d="M70 30 Q68 20 74 14" stroke="#8FAF8A" stroke-width="0.8" fill="none"/>
+          <ellipse cx="76" cy="11" rx="4" ry="7" fill="#A8CCA3" opacity="0.5" transform="rotate(15 76 11)"/>
+          <circle cx="30" cy="28" r="6" fill="#F2C4CE" opacity="0.8"/>
+          <circle cx="30" cy="28" r="3" fill="#C8637C" opacity="0.6"/>
+          <ellipse cx="26" cy="26" rx="4" ry="5" fill="#F2C4CE" opacity="0.5" transform="rotate(-30 26 26)"/>
+          <ellipse cx="34" cy="24" rx="4" ry="5" fill="#F2C4CE" opacity="0.5" transform="rotate(30 34 24)"/>
+          <ellipse cx="28" cy="22" rx="3" ry="4" fill="#F2C4CE" opacity="0.4" transform="rotate(10 28 22)"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="letter-salutation reveal">Hi Moksha,</div>
+
+    <div class="letter-body">
+
+      <p class="reveal">I understand if you'd rather not stay in touch. I've been thinking that maybe things felt off after we met, or that you've had a lot going on. Either way, I'm really sorry for pushing you to talk and for coming across as anxious. I should have respected your space more.</p>
+
+      <p class="reveal">I also want to apologise for not being completely honest earlier. I think I was just scared of coming across as weak.</p>
+
+      <div class="section-divider reveal"><div class="div-line"></div><div class="div-rose">✦</div><div class="div-line"></div></div>
+
+      <p class="reveal">I know what it feels like to lose someone who really matters — it affected me more than I expected. I spiraled into self-hate, isolated myself, and pushed people away. There were days I genuinely didn't see a reason to keep going, and at one point, I even tried to end things.</p>
+
+      <p class="reveal">Things at home didn't help either. I often felt misunderstood, constantly judged, and alone in a way that's hard to explain. The environment around me wasn't exactly supportive, and I picked up habits like smoking weed daily just to feel something calmer — something numb.</p>
+
+      <div class="section-divider reveal"><div class="div-line"></div><div class="div-rose">✦</div><div class="div-line"></div></div>
+
+      <p class="reveal highlight">But then you came into my life.</p>
+
+      <p class="reveal">Something about you felt different from the start. Talking to you, waiting for your texts — it made me feel alive again. For the first time in a long while, I actually wanted to do better. I didn't feel the urge to escape anymore. I wanted to work on myself.</p>
+
+      <p class="reveal">I'm not saying everything is suddenly perfect, but you've had a real impact on me, and I felt like you deserved to know the truth.</p>
+
+      <div class="section-divider reveal"><div class="div-line"></div><div class="div-rose">✦</div><div class="div-line"></div></div>
+
+      <p class="reveal highlight">And then I met you.</p>
+
+      <p class="reveal">The first time I saw you, I couldn't stop looking at your eyes. I wasn't even planning to give you my jacket, but I just got lost in that moment. Even while riding, I kept adjusting my mirrors just to catch another glimpse of you.</p>
+
+      <p class="reveal">What happened later that evening… it wasn't planned, and I'm really sorry if I crossed a line with the way I kissed you. I should've handled that better.</p>
+
+      <p class="reveal">But beyond that, I genuinely liked everything about you — your voice, your smile, the way you roll your eyes… all of it. For the first time in a long while, I actually wanted to show up for someone. To do things right. To be someone who could make you smile and feel taken care of.</p>
+
+      <p class="reveal">And when you told me about your past, it hit me in a way I didn't expect. I could relate more than I said at the time, and it made me feel like we understood each other on a deeper level.</p>
+
+      <div class="section-divider reveal"><div class="div-line"></div><div class="div-rose">✦</div><div class="div-line"></div></div>
+
+      <p class="reveal">I never imagined I'd feel like this about someone. I wanted to do things right — take you out on fun dates, get you flowers, pick you up and drop you, open doors for you… just show you that I can care, and that you deserve that kind of softness and respect.</p>
+
+      <p class="reveal highlight">Out of so many people in this world, we somehow crossed paths — and that means something to me.</p>
+
+      <p class="reveal">Maybe I messed things up, or maybe the timing just wasn't right. Either way, I'd really like another chance — to take you out, spend time with you, and let you see who I actually am.</p>
+
+      <div class="section-divider reveal"><div class="div-line"></div><div class="div-rose">✦</div><div class="div-line"></div></div>
+
+      <p class="reveal">Not to rush into anything or force a relationship. I just want to know you better, and let you know me too. Simple as that.</p>
+
+      <p class="reveal">I've spent a lot of my life letting go of things I wanted without even trying. I'm not doing that this time. I'd rather try and be told no than sit with a "what if" later.</p>
+
+      <p class="reveal">I meant what I said — I can handle you, your moods, your chaos, all of it. And I'd never treat you the way you were treated before.</p>
+
+      <p class="reveal">I'd really like to start fresh — no pressure, just taking things at our own pace, if you're open to it.</p>
+
+      <p class="reveal highlight">Maybe we could meet for something simple, like a clay workshop I've been wanting to try. I think it'd be fun, and I'd love to do that with you.</p>
+
+    </div>
+
+    <!-- Bottom floral -->
+    <div class="floral-bottom" style="margin-top:3rem;">
+      <svg width="200" height="50" viewBox="0 0 200 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g opacity="0.65">
+          <path d="M10 25 Q40 15 90 22 Q100 24 110 22 Q160 15 190 25" stroke="#C9A96E" stroke-width="0.8" fill="none"/>
+          <path d="M60 22 Q58 12 64 6" stroke="#8FAF8A" stroke-width="0.8" fill="none"/>
+          <ellipse cx="66" cy="3" rx="4" ry="6" fill="#A8CCA3" opacity="0.6" transform="rotate(-15 66 3)"/>
+          <path d="M80 22 Q78 12 84 6" stroke="#8FAF8A" stroke-width="0.8" fill="none"/>
+          <ellipse cx="86" cy="3" rx="4" ry="6" fill="#A8CCA3" opacity="0.5" transform="rotate(15 86 3)"/>
+          <path d="M120 22 Q118 12 124 6" stroke="#8FAF8A" stroke-width="0.8" fill="none"/>
+          <ellipse cx="126" cy="3" rx="4" ry="6" fill="#A8CCA3" opacity="0.5" transform="rotate(-15 126 3)"/>
+          <path d="M140 22 Q138 12 144 6" stroke="#8FAF8A" stroke-width="0.8" fill="none"/>
+          <ellipse cx="146" cy="3" rx="4" ry="6" fill="#A8CCA3" opacity="0.6" transform="rotate(15 146 3)"/>
+          <!-- center heart -->
+          <path d="M100 35 C100 35 88 26 88 20 C88 16 92 14 96 16 C98 17 100 20 100 20 C100 20 102 17 104 16 C108 14 112 16 112 20 C112 26 100 35 100 35Z" fill="#C8637C" opacity="0.5"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="letter-sign reveal">
+      <div class="from">With all sincerity,</div>
+      <div class="name">Someone who means it</div>
+    </div>
+
   </div>
-  <div class="ornament">✦</div>
-  <p class="signature">— yours, always</p>
 </section>
+
+<!-- CLOSING -->
+<section class="closing">
+  <div class="closing-quote reveal">
+    "I'd rather try and be told no<br>than sit with a <em>'what if'</em> forever."
+  </div>
+</section>
+
+<!-- CANVAS for petals -->
+<canvas id="hearts-canvas" style="position:fixed;inset:0;z-index:0;pointer-events:none;"></canvas>
 
 <script>
-  // ── PETAL CANVAS ──
+// ── CURSOR ──
+const cursor = document.getElementById('cursor');
+const cursorOuter = cursor.querySelector('.cursor-outer');
+let mx = -100, my = -100, ox = -100, oy = -100;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+(function moveCursor() {
+  ox += (mx - ox) * 0.18;
+  oy += (my - oy) * 0.18;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+  cursorOuter.style.left = (ox - mx) + 'px';
+  cursorOuter.style.top = (oy - my) + 'px';
+  requestAnimationFrame(moveCursor);
+})();
+
+// ── PROGRESS BAR ──
+const prog = document.getElementById('progress');
+window.addEventListener('scroll', () => {
+  const p = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+  prog.style.width = (p * 100) + '%';
+});
+
+// ── LOADER ──
+const loaderTexts = ["Opening a letter…", "Written with care…", "From the heart…", "Just for you…"];
+let li = 0;
+const lt = document.getElementById('loader-text');
+const ltInt = setInterval(() => {
+  li = (li + 1) % loaderTexts.length;
+  lt.style.opacity = 0;
+  setTimeout(() => { lt.textContent = loaderTexts[li]; lt.style.opacity = ''; }, 500);
+}, 2200);
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    clearInterval(ltInt);
+    document.getElementById('loader').classList.add('gone');
+    initPetals();
+    initHearts();
+  }, 2200);
+});
+
+// ── SCROLL REVEAL ──
+const reveals = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      e.target.classList.add('is-visible');
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+// Stagger siblings
+reveals.forEach((el, i) => {
+  const siblings = [...el.parentElement.querySelectorAll('.reveal')];
+  const idx = siblings.indexOf(el);
+  el.style.animationDelay = (idx * 0.08) + 's';
+  io.observe(el);
+});
+
+// ── FALLING PETALS ──
+function initPetals() {
   const canvas = document.getElementById('petals-canvas');
   const ctx = canvas.getContext('2d');
-  let W, H;
-  const petals = [];
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
 
-  function resize() {
-    W = canvas.width = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize);
+  const colors = ['#F2C4CE','#F9DDE4','#C8637C','#E8D5B0','#F7E0E6','#FBEAEE'];
+  const petals = Array.from({length: 22}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height * -1,
+    r: 4 + Math.random() * 7,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    speed: 0.6 + Math.random() * 1.2,
+    drift: (Math.random() - 0.5) * 0.5,
+    spin: (Math.random() - 0.5) * 0.04,
+    angle: Math.random() * Math.PI * 2,
+    opacity: 0.4 + Math.random() * 0.45,
+    wobble: Math.random() * Math.PI * 2,
+    wobbleSpeed: 0.01 + Math.random() * 0.02,
+  }));
 
-  class Petal {
-    constructor(burst) {
-      this.reset(burst);
-    }
-    reset(burst) {
-      this.x = burst ? W / 2 + (Math.random() - 0.5) * 120 : Math.random() * W;
-      this.y = burst ? H / 2 + (Math.random() - 0.5) * 80 : H + 20;
-      this.size = 5 + Math.random() * 7;
-      this.speedY = burst ? -(2 + Math.random() * 4) : -(0.5 + Math.random() * 1.2);
-      this.speedX = (Math.random() - 0.5) * (burst ? 3 : 0.8);
-      this.rotation = Math.random() * Math.PI * 2;
-      this.rotSpeed = (Math.random() - 0.5) * 0.08;
-      this.opacity = burst ? 0.9 : 0.4 + Math.random() * 0.5;
-      this.life = 1;
-      this.decay = burst ? 0.008 + Math.random() * 0.01 : 0.003 + Math.random() * 0.004;
-      this.hue = 330 + Math.random() * 30;
-      this.sat = 60 + Math.random() * 30;
-    }
-    update() {
-      this.x += this.speedX;
-      this.y += this.speedY;
-      this.rotation += this.rotSpeed;
-      this.life -= this.decay;
-      this.speedX += (Math.random() - 0.5) * 0.05;
-    }
-    draw() {
-      ctx.save();
-      ctx.translate(this.x, this.y);
-      ctx.rotate(this.rotation);
-      ctx.globalAlpha = this.life * this.opacity;
-      ctx.fillStyle = `hsl(${this.hue}, ${this.sat}%, 75%)`;
-      ctx.beginPath();
-      ctx.ellipse(0, 0, this.size, this.size * 0.55, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    }
+  function drawPetal(ctx, p) {
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.angle);
+    ctx.globalAlpha = p.opacity;
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, p.r * 0.6, p.r, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
   }
 
-  // gentle ambient petals
-  for (let i = 0; i < 12; i++) petals.push(new Petal(false));
-
-  function animate() {
-    ctx.clearRect(0, 0, W, H);
-    for (let i = petals.length - 1; i >= 0; i--) {
-      petals[i].update();
-      petals[i].draw();
-      if (petals[i].life <= 0) {
-        petals[i].reset(false);
-        petals[i].y = H + 20;
+  function animPetals() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    petals.forEach(p => {
+      p.wobble += p.wobbleSpeed;
+      p.x += p.drift + Math.sin(p.wobble) * 0.4;
+      p.y += p.speed;
+      p.angle += p.spin;
+      if (p.y > canvas.height + 20) {
+        p.y = -20; p.x = Math.random() * canvas.width;
       }
-    }
-    requestAnimationFrame(animate);
+      drawPetal(ctx, p);
+    });
+    requestAnimationFrame(animPetals);
   }
-  animate();
+  animPetals();
+}
 
-  // ── BUTTON LOGIC ──
-  let noCount = 0;
-  const btnYes = document.getElementById('btn-yes');
-  const btnNo  = document.getElementById('btn-no');
+// ── FLOATING HEARTS ──
+function initHearts() {
+  const canvas = document.getElementById('hearts-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
 
-  const noTexts = [
-    'No', 'Really no?', 'Are you sure?', 'Think again…',
-    'Come on…', 'Please?', 'Just one chance!', 'I promise I\'m worth it',
-    'Last chance to say no…', 'Ok fine, but really?', '…no?'
-  ];
+  const hearts = Array.from({length: 8}, () => ({
+    x: Math.random() * canvas.width,
+    y: canvas.height + Math.random() * 200,
+    size: 6 + Math.random() * 10,
+    speed: 0.3 + Math.random() * 0.6,
+    opacity: 0.1 + Math.random() * 0.2,
+    drift: (Math.random() - 0.5) * 0.3,
+    wobble: Math.random() * Math.PI * 2,
+    wobbleSpeed: 0.008 + Math.random() * 0.015,
+  }));
 
-  function onNo() {
-    noCount++;
-    const scale = 1 + noCount * 0.18;
-    const noScale = Math.max(0.35, 1 - noCount * 0.1);
-
-    btnYes.style.fontSize = Math.min(1.1 + noCount * 0.15, 2.4) + 'rem';
-    btnYes.style.padding = `${0.85 + noCount * 0.08}em ${2.2 + noCount * 0.18}em`;
-    btnYes.style.boxShadow = `0 ${4 + noCount * 2}px ${20 + noCount * 5}px rgba(200,80,106,${Math.min(0.25 + noCount * 0.04, 0.55)})`;
-
-    btnNo.style.fontSize = Math.max(0.9 - noCount * 0.07, 0.3) + 'rem';
-    btnNo.style.padding = `${Math.max(0.7 - noCount * 0.06, 0.15)}em ${Math.max(1.8 - noCount * 0.12, 0.4)}em`;
-    btnNo.style.opacity = Math.max(1 - noCount * 0.09, 0.2);
-
-    btnNo.textContent = noTexts[Math.min(noCount, noTexts.length - 1)];
-
-    if (noCount >= 10) {
-      btnNo.style.visibility = 'hidden';
-    }
-
-    // spawn burst petals
-    for (let i = 0; i < 10; i++) petals.push(new Petal(true));
+  function drawHeart(ctx, x, y, s, opacity) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = '#C8637C';
+    ctx.beginPath();
+    ctx.moveTo(0, -s * 0.4);
+    ctx.bezierCurveTo(s * 0.5, -s, s, -s * 0.3, 0, s * 0.6);
+    ctx.bezierCurveTo(-s, -s * 0.3, -s * 0.5, -s, 0, -s * 0.4);
+    ctx.fill();
+    ctx.restore();
   }
 
-  function onYes() {
-    // big petal burst
-    for (let i = 0; i < 40; i++) {
-      setTimeout(() => petals.push(new Petal(true)), i * 18);
-    }
-    document.getElementById('page1').classList.add('hidden');
-    setTimeout(() => {
-      document.getElementById('page2').classList.remove('hidden');
-    }, 400);
+  function animHearts() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    hearts.forEach(h => {
+      h.wobble += h.wobbleSpeed;
+      h.x += h.drift + Math.sin(h.wobble) * 0.5;
+      h.y -= h.speed;
+      if (h.y < -40) {
+        h.y = canvas.height + 20;
+        h.x = Math.random() * canvas.width;
+      }
+      drawHeart(ctx, h.x, h.y, h.size, h.opacity);
+    });
+    requestAnimationFrame(animHearts);
   }
+  animHearts();
+}
 </script>
 </body>
 </html>
